@@ -1,0 +1,48 @@
+---
+title: "Logistic Regression in Breast Cancer Patients"
+author: "Carmen Canedo"
+date: "10 August 2020"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+# About
+We will be looking at data collected on breast cancer patients in Wisconsin in 2020.
+
+# Loading necessary libraries
+These are the necessary libraries you will need to have loaded to follow along with the code below.
+
+```{r}
+library(tidyverse)
+```
+
+
+# Loading in data
+```{r}
+breast_cancer_original <- read.csv("Breast_cancer_data_Wisconsin_Stat302_2020.csv")
+```
+
+## Cleaning data
+Renaming columns for clarity
+```{r}
+breast_cancer <- breast_cancer_original %>% 
+  rename(clump_thickness = ClumpThick) %>% 
+  rename(size_uniformity = SizeUniforrm) %>% 
+  rename(shape_uniformity = shapeUniform) %>% 
+  rename(marginal_adhesion = Adhesion) %>% 
+  rename(cell_size = cell.cize) %>% 
+  rename(bare_nuclei = bareNuclei) %>% 
+  rename(bland_cromatin = Cromatin) %>% 
+  rename(normal_nucleoli = normalNuclei) %>% 
+  rename(mitoses = Mitozis) %>% 
+  rename(growth_class = Btype)
+```
+
+Next, we need to covert class to a factor because its two values, 2 and 4, represent benign and malignant growths respectively.
+```{r}
+breast_cancer$growth_class <- as.factor(breast_cancer$growth_class)
+```
+
+
+# Analysis
