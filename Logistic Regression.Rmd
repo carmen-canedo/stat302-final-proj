@@ -20,12 +20,14 @@ library(tidyverse)
 
 # Loading in data
 ```{r}
+# Reading in .csv
 breast_cancer_original <- read.csv("Breast_cancer_data_Wisconsin_Stat302_2020.csv")
 ```
 
 ## Cleaning data
 Renaming columns for clarity
 ```{r}
+# Saving renamed columns into new data frame
 breast_cancer <- breast_cancer_original %>% 
   rename(clump_thickness = ClumpThick) %>% 
   rename(size_uniformity = SizeUniforrm) %>% 
@@ -41,8 +43,43 @@ breast_cancer <- breast_cancer_original %>%
 
 Next, we need to covert class to a factor because its two values, 2 and 4, represent benign and malignant growths respectively.
 ```{r}
+# Converting growth_class to a factor
 breast_cancer$growth_class <- as.factor(breast_cancer$growth_class)
 ```
 
 
 # Analysis
+We are going to use the backwards method to create our logistic model. We will first start with all variables included.
+```{r}
+# Creating model using all variables to determing growth_class
+logistic <- glm(growth_class ~ ., data = breast_cancer, family = "binomial")
+
+# Results of logistic model
+summary(logistic)
+```
+
+## Interpretation
+Using the information above, we can infer which variables have an effect on whether breast cancer patients in Wisconsin are likely to have benign versus malignant growths.
+
+# Graphing
+In order to graph the probabilities of the model below, we need to create a new data frame that has the probabilities.
+```{r}
+# Creating new data frame of probabilities
+predicted_data <- data.frame(probability_of_growth_class = logistic$fitted.values, growth_class = breast_cancer$growth_class)
+
+# Sorting from low to high
+predicted_data <- predicted_data[order(predicted_data$probability_of_growth_class, decreasing = FALSE),]
+
+# Ranking probability from low to high
+predicted_data$rank <- 1:nrow(predicted_data)
+```
+
+## Creating graph
+
+```{r}
+ggplot(data = predicted_data, aes(x = rank, y = probability_of_growth_class)) +
+  geom_point(aes(color = growth_class), alpha = 1, shape = 4, stoke = 2) +
+  theme_set(theme_linedraw()) +
+  labs(x = "Index", y = "Predicted probability of begnign or malignant growth")
+```
+
