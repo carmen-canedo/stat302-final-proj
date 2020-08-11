@@ -81,20 +81,27 @@ bc_correlations
 bc_corr <- breast_cancer %>% 
   select(-bare_nuclei, -ID)
 
-# Final corelation matrix
+# Final correlation matrix
 bc_corr <- cor(bc_corr)
 bc_corr
 ```
 
 This matrix can be seen in its visual representation below.
-
 ```{r}
 corrplot.mixed(bc_corr,
          order = "hclust",
          tl.cex = .4,
          tl.col = "black")
 ```
+### Interpretation
+From this visualization, we can easily see that all combinations of variables have positive associations. The strongest correlations (which in this instance we are determining as greater than or equal to 0.75) are between the following:
 
++ Size uniformity and cell size: 0.75
++ Bland chromatin and growth classification: 0.76
++ Bland chromatin and size uniformity: 0.76
++ Growth classification and size uniformity: 0.82
++ Growth classification and shape uniformity: 0.82
++ Size uniformity and shape uniformity: 0.91
 
 ## Logistic model
 We are going to use the backwards method to create our logistic model. We will first start with all variables included.
