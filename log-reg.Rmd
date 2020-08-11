@@ -126,9 +126,16 @@ logistic_2 <- glm(growth_class ~ ., data = reduced_bc, family = "binomial")
 summary(logistic_2)
 ```
 
+All of our variables are now statistically significant at 0.05. We can move forward to the interpretation of the model.
 
 ## Interpretation
 Using the information above, we can infer which variables have an effect on whether breast cancer patients in Wisconsin are likely to have benign versus malignant growths.
+
+The values on the y-access of logistic regression are limited from 0 to 1 in order to calculate the probability. We can transform this to the log odds of cancerous growth to increase the domain of the y-axis from negative infinity to positive infinity. We will later visualize the logistic model using a domain of 0 to 1, but the coefficents are determined using logg odds.
+
+Our model for the growth classification of breast cancer patients in Wisconsin from 1989-1991 is as follows:
+
+$ growthclassification = -10.1137 + 0.81166(clumpthickness) + 0.43412(marginaladhesion) + 0.48136(barenuclei) + 0.70154(blandcromatin) $
 
 # Graphing
 In order to graph the probabilities of the model below, we need to create a new data frame that has the probabilities.
