@@ -13,7 +13,7 @@ We will be looking at data collected on breast cancer patients in Wisconsin in 2
 # Loading necessary libraries
 These are the necessary libraries you will need to have loaded to follow along with the code below.
 
-```{r}
+```{r, message=FALSE}
 library(tidyverse)
 ```
 
@@ -41,14 +41,31 @@ breast_cancer <- breast_cancer_original %>%
   rename(growth_class = Btype)
 ```
 
-Next, we need to covert class to a factor because its two values, 2 and 4, represent benign and malignant growths respectively.
+Normally, we would need to covert growth_class to a factor because its two values, 2 and 4, represent benign and malignant growths respectively. However, later in the code the `cor()` function requires that all columns are numeric. We will make those changes now.
 ```{r}
-# Converting growth_class to a factor
-breast_cancer$growth_class <- as.factor(breast_cancer$growth_class)
+# Checking class
+sapply(breast_cancer, class)
+
+# List of column names
+names <- c("ID", "clump_thickness", "size_uniformity", "shape_uniformity", "marginal_adhesion", "cell_size", "bare_nuclei", "bland_cromatin", "normal_nucleoli", "mitoses", "growth_class")
+
+# Changing type to numeric using sapply and list of column names
+breast_cancer[names] <- sapply(breast_cancer[names], as.numeric)
+
+# Checking to make sure answer is correct
+sapply(breast_cancer, class)
 ```
 
 
 # Analysis
+Let's take a look at the correlation matrix to get a general idea of the patterns in the data.
+```{r}
+bc_correlations <- cor(breast_cancer)
+
+bc_correlations
+```
+
+
 We are going to use the backwards method to create our logistic model. We will first start with all variables included.
 ```{r}
 # Creating model using all variables to determing growth_class
@@ -80,6 +97,10 @@ predicted_data$rank <- 1:nrow(predicted_data)
 ggplot(data = predicted_data, aes(x = rank, y = probability_of_growth_class)) +
   geom_point(aes(color = growth_class), alpha = 1, shape = 4, stoke = 2) +
   theme_set(theme_linedraw()) +
-  labs(x = "Index", y = "Predicted probability of begnign or malignant growth")
+  labs(title = "Logistic Model of Breast Cancer Patients in Wisconsion",
+       subtitle = "(1989-1991)",
+       caption = "Data from Dr. William H. Wolberg, University of Wisconsin",
+       x = "Index",
+       y = "Predicted probability of begnign or malignant growth")
 ```
 
