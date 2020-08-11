@@ -104,14 +104,28 @@ From this visualization, we can easily see that all combinations of variables ha
 + Size uniformity and shape uniformity: 0.91
 
 ## Logistic model
-We are going to use the backwards method to create our logistic model. We will first start with all variables included.
+We are going to use the backwards method to create our logistic model. We will first start with all potential explanatory variables and perform regression on them
 ```{r}
 # Creating model using all variables to determining growth_class
-logistic <- glm(growth_class ~ ., data = breast_cancer, family = "binomial")
+logistic_1 <- glm(growth_class ~ ., data = breast_cancer, family = "binomial")
 
 # Results of logistic model
-summary(logistic)
+summary(logistic_1)
 ```
+
+Now we will exclude the variables whose are not statistically significant at a 95% significance level. We will now remove the following: ID, size_uniformity, shape_uniformity, cell_size, normal_nucleoli, and mitoses.
+```{r}
+# Removing variables that are not statistically significant
+reduced_bc <- breast_cancer %>% 
+  select(-ID, -size_uniformity, -shape_uniformity, -cell_size, -normal_nucleoli, -mitoses)
+
+# Creating model using remaining variables to determining growth_class
+logistic_2 <- glm(growth_class ~ ., data = reduced_bc, family = "binomial")
+
+# Results of logistic model
+summary(logistic_2)
+```
+
 
 ## Interpretation
 Using the information above, we can infer which variables have an effect on whether breast cancer patients in Wisconsin are likely to have benign versus malignant growths.
