@@ -3,18 +3,18 @@ title: "Logistic Regression in Breast Cancer Patients"
 author: "Carmen Canedo"
 date: "10 August 2020"
 output: html_notebook
-editor_options: 
+editor_options:
   chunk_output_type: inline
 ---
 
-# About
-We will be looking at data collected on breast cancer patients in Wisconsin in 2020.
+# Objective
+We will be looking at data collected on breast cancer patients in Wisconsin by Dr. William H. Wolberg from 1989-1991. The data observes the growths in 699 individuals, measuring variables such as clump thickness, size uniformity, marginal adhesion, cell_size, bare nuclei, bland chromatin, normal nucleoli, mitoses, and growth classification. In this report, I will be using a backwards selection process to create a logistic model to determine what explanatory variables most affect a benign or malignant diagnosis.
 
 # Loading necessary libraries
 These are the necessary libraries you will need to have loaded to follow along with the code below.
-
 ```{r, message=FALSE}
 library(tidyverse)
+library(corrplot)
 ```
 
 
@@ -56,19 +56,49 @@ breast_cancer[names] <- sapply(breast_cancer[names], as.numeric)
 sapply(breast_cancer, class)
 ```
 
-
-# Analysis
-Let's take a look at the correlation matrix to get a general idea of the patterns in the data.
+Lastly, we need to recode 2 and 4 to 0 and 1, so that the program will be able to run its regression on the data.
 ```{r}
-bc_correlations <- cor(breast_cancer)
-
-bc_correlations
+# Chaing to 0 and 1
+breast_cancer <- breast_cancer  %>% 
+  mutate(growth = case_when(growth_class == 2 ~ 0, growth_class == 4 ~ 1)) %>% 
+  select(-growth_class) %>% 
+  rename(growth_class = growth)
 ```
 
 
+# Analysis
+## Correlation
+Let's take a look at the correlation matrix to get a general idea of the patterns in the data.
+```{r}
+# Computing correlation for breast_cancer data set
+bc_correlations <- cor(breast_cancer)
+
+# Calling object
+bc_correlations
+
+# Getting rid of missing values and ID
+bc_corr <- breast_cancer %>% 
+  select(-bare_nuclei, -ID)
+
+# Final corelation matrix
+bc_corr <- cor(bc_corr)
+bc_corr
+```
+
+This matrix can be seen in its visual representation below.
+
+```{r}
+corrplot.mixed(bc_corr,
+         order = "hclust",
+         tl.cex = .4,
+         tl.col = "black")
+```
+
+
+## Logistic model
 We are going to use the backwards method to create our logistic model. We will first start with all variables included.
 ```{r}
-# Creating model using all variables to determing growth_class
+# Creating model using all variables to determining growth_class
 logistic <- glm(growth_class ~ ., data = breast_cancer, family = "binomial")
 
 # Results of logistic model
