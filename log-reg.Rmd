@@ -124,6 +124,12 @@ logistic_2 <- glm(growth_class ~ ., data = reduced_bc, family = "binomial")
 
 # Results of logistic model
 summary(logistic_2)
+
+# Exponentiated coefficients
+exp(logistic_2$coefficients)
+
+# Wald Test
+anova(logistic_2, update(logistic_2, ~1), test = "Chisq")
 ```
 
 All of our variables are now statistically significant at 0.05. We can move forward to the interpretation of the model.
@@ -131,7 +137,7 @@ All of our variables are now statistically significant at 0.05. We can move forw
 ## Interpretation
 Using the information above, we can infer which variables have an effect on whether breast cancer patients in Wisconsin are likely to have benign versus malignant growths.
 
-The values on the y-access of logistic regression are limited from 0 to 1 in order to calculate the probability. We can transform this to the log odds of cancerous growth to increase the domain of the y-axis from negative infinity to positive infinity. We will later visualize the logistic model using a domain of 0 to 1, but the coefficents are determined using logg odds.
+The values on the y-access of logistic regression are limited from 0 to 1 in order to calculate the probability. We can transform this to the log odds of cancerous growth to increase the domain of the y-axis from negative infinity to positive infinity. We will later visualize the logistic model using a domain of 0 to 1, but the coefficients are determined using logg odds.
 
 Our model for the growth classification of breast cancer patients in Wisconsin from 1989-1991 is as follows:
 
@@ -141,7 +147,7 @@ $ growthclassification = -10.1137 + 0.81166(clumpthickness) + 0.43412(marginalad
 In order to graph the probabilities of the model below, we need to create a new data frame that has the probabilities.
 ```{r}
 # Creating new data frame of probabilities
-predicted_data <- data.frame(probability_of_growth_class = logistic$fitted.values, growth_class = breast_cancer$growth_class)
+predicted_data <- data.frame(probability_of_growth_class = logistic_2[["fitted.values"]], growth_class = logistic_2$model)
 
 # Sorting from low to high
 predicted_data <- predicted_data[order(predicted_data$probability_of_growth_class, decreasing = FALSE),]
@@ -151,15 +157,16 @@ predicted_data$rank <- 1:nrow(predicted_data)
 ```
 
 ## Creating graph
-
 ```{r}
-ggplot(data = predicted_data, aes(x = rank, y = probability_of_growth_class)) +
-  geom_point(aes(color = growth_class), alpha = 1, shape = 4, stoke = 2) +
+graphed_model <- ggplot(data = predicted_data, aes(x = rank, y = probability_of_growth_class)) +
+  geom_point(aes(color = growth_class.growth_class), alpha = 1, shape = 4, stroke = 0.5) +
   theme_set(theme_linedraw()) +
   labs(title = "Logistic Model of Breast Cancer Patients in Wisconsion",
        subtitle = "(1989-1991)",
        caption = "Data from Dr. William H. Wolberg, University of Wisconsin",
        x = "Index",
        y = "Predicted probability of begnign or malignant growth")
+
+graphed_model
 ```
 
