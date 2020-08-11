@@ -1,8 +1,10 @@
 ---
 title: "Logistic Regression in Breast Cancer Patients"
 author: "Carmen Canedo"
-date: "10 August 2020"
-output: html_notebook
+date: "11 August 2020"
+output:
+  pdf_document: default
+  html_notebook: default
 editor_options:
   chunk_output_type: inline
 ---
@@ -12,10 +14,9 @@ We will be looking at data collected on breast cancer patients in Wisconsin by D
 
 # Loading necessary libraries
 These are the necessary libraries you will need to have loaded to follow along with the code below.
-```{r, message=FALSE}
+```{r, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(corrplot)
-#library(car)
 library(aod)
 ```
 
@@ -95,7 +96,7 @@ corrplot.mixed(bc_corr,
          tl.cex = .4,
          tl.col = "black")
 ```
-### Interpretation
+## Interpretation
 From this visualization, we can easily see that all combinations of variables have positive associations. The strongest correlations (which in this instance we are determining as greater than or equal to 0.75) are between the following:
 
 + Size uniformity and cell size: 0.75
@@ -145,8 +146,10 @@ Our model for the growth classification of breast cancer patients in Wisconsin f
 
 $ growthclassification = -10.1137 + 0.81166(clumpthickness) + 0.43412(marginaladhesion) + 0.48136(barenuclei) + 0.70154(blandcromatin) $
 
+Based on our Wald test with 2 degrees of freedom, the p-values indicate that the associations are statistically significant at alpha less than 0.05 for clump thickness, magrinal adhesion, bare nuclei, and bland chromatin.
+
 # Graphing
-In order to graph the probabilities of the model below, we need to create a new data frame that has the probabilities.
+In order to graph the probabilities of the model above, we need to create a new data frame that has the probabilities.
 ```{r}
 # Creating new data frame of probabilities
 predicted_data <- data.frame(probability_of_growth_class = logistic_2[["fitted.values"]], growth_class = logistic_2$model)
@@ -173,3 +176,5 @@ graphed_model <- ggplot(data = predicted_data, aes(x = rank, y = probability_of_
 graphed_model
 ```
 
+# Conclusion
+Now that we have performed our logistic regression, we can see that clump thickness, marginal adhesion, bare nuclei, and bland chromatin have the greatest effect on the outcome of a benign or malignant diagnosis. 
