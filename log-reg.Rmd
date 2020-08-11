@@ -15,6 +15,8 @@ These are the necessary libraries you will need to have loaded to follow along w
 ```{r, message=FALSE}
 library(tidyverse)
 library(corrplot)
+#library(car)
+library(aod)
 ```
 
 
@@ -129,7 +131,7 @@ summary(logistic_2)
 exp(logistic_2$coefficients)
 
 # Wald Test
-anova(logistic_2, update(logistic_2, ~1), test = "Chisq")
+wald.test(b = coef(logistic_2), Sigma = vcov(logistic_2), Terms = 3:4)
 ```
 
 All of our variables are now statistically significant at 0.05. We can move forward to the interpretation of the model.
@@ -165,7 +167,8 @@ graphed_model <- ggplot(data = predicted_data, aes(x = rank, y = probability_of_
        subtitle = "(1989-1991)",
        caption = "Data from Dr. William H. Wolberg, University of Wisconsin",
        x = "Index",
-       y = "Predicted probability of begnign or malignant growth")
+       y = "Predicted probability of begnign or malignant growth",
+       color = "Growth Classification")
 
 graphed_model
 ```
