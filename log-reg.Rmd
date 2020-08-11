@@ -19,13 +19,14 @@ library(corrplot)
 
 
 # Loading in data
+The data provided to me by Professor Kongoli of American University was initially provided as an Excel document. You will need to convert the file to a .csv to read it into R. 
 ```{r}
 # Reading in .csv
 breast_cancer_original <- read.csv("Breast_cancer_data_Wisconsin_Stat302_2020.csv")
 ```
 
 ## Cleaning data
-Renaming columns for clarity
+Before beginning the analysis, I will make some adjustments to the data. I am renaming the columns for clarity, changing their class, and modifying the values of the growth classification.
 ```{r}
 # Saving renamed columns into new data frame
 breast_cancer <- breast_cancer_original %>% 
@@ -41,7 +42,7 @@ breast_cancer <- breast_cancer_original %>%
   rename(growth_class = Btype)
 ```
 
-Normally, we would need to covert growth_class to a factor because its two values, 2 and 4, represent benign and malignant growths respectively. However, later in the code the `cor()` function requires that all columns are numeric. We will make those changes now.
+Normally, we would need to covert growth_class to a factor because its two values, 2 and 4, represent benign and malignant growths respectively. However, later in the code the `cor()` function requires that all columns are numeric. We will make those changes now, but it is imperative to keep in mind that calculations should not be done on these values.
 ```{r}
 # Checking class
 sapply(breast_cancer, class)
@@ -56,9 +57,9 @@ breast_cancer[names] <- sapply(breast_cancer[names], as.numeric)
 sapply(breast_cancer, class)
 ```
 
-Lastly, we need to recode 2 and 4 to 0 and 1, so that the program will be able to run its regression on the data.
+Lastly, we need to re-code 2 and 4 to 0 and 1, so that the program will be able to run its regression on the data.
 ```{r}
-# Chaing to 0 and 1
+# Changing to 0 and 1
 breast_cancer <- breast_cancer  %>% 
   mutate(growth = case_when(growth_class == 2 ~ 0, growth_class == 4 ~ 1)) %>% 
   select(-growth_class) %>% 
