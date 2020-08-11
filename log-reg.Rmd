@@ -10,7 +10,7 @@ editor_options:
 ---
 
 # Objective
-We will be looking at data collected on breast cancer patients in Wisconsin by Dr. William H. Wolberg from 1989-1991. The data observes the growths in 699 individuals, measuring variables such as clump thickness, size uniformity, marginal adhesion, cell_size, bare nuclei, bland chromatin, normal nucleoli, mitoses, and growth classification. In this report, I will be using a backwards selection process to create a logistic model to determine what explanatory variables most affect a benign or malignant diagnosis.
+We will be looking at data collected on breast cancer patients in Wisconsin by Dr. William H. Wolberg from 1989-1991. The data observes the growths in 699 individuals, measuring variables such as clump thickness, size uniformity, marginal adhesion, cell size, bare nuclei, bland chromatin, normal nucleoli, mitoses, and growth classification. In this report, I will be using a backwards selection process to create a logistic model to determine what explanatory variables most affect a benign or malignant diagnosis.
 
 # Loading necessary libraries
 These are the necessary libraries you will need to have loaded to follow along with the code below.
@@ -46,7 +46,7 @@ breast_cancer <- breast_cancer_original %>%
 ```
 
 Normally, we would need to covert growth_class to a factor because its two values, 2 and 4, represent benign and malignant growths respectively. However, later in the code the `cor()` function requires that all columns are numeric. We will make those changes now, but it is imperative to keep in mind that calculations should not be done on these values.
-```{r}
+```{r, warning=FALSE}
 # Checking class
 sapply(breast_cancer, class)
 
@@ -91,11 +91,13 @@ bc_corr
 
 This matrix can be seen in its visual representation below.
 ```{r}
+# Visualizing correlation matrix
 corrplot.mixed(bc_corr,
          order = "hclust",
          tl.cex = .4,
          tl.col = "black")
 ```
+
 ## Interpretation
 From this visualization, we can easily see that all combinations of variables have positive associations. The strongest correlations (which in this instance we are determining as greater than or equal to 0.75) are between the following:
 
@@ -107,16 +109,16 @@ From this visualization, we can easily see that all combinations of variables ha
 + Size uniformity and shape uniformity: 0.91
 
 ## Logistic model
-We are going to use the backwards method to create our logistic model. We will first start with all potential explanatory variables and perform regression on them
+We are going to use the backwards method to create our logistic model. We will first start with all potential explanatory variables and perform regression on them.
 ```{r}
-# Creating model using all variables to determining growth_class
+# Creating model using all variables to determine growth_class
 logistic_1 <- glm(growth_class ~ ., data = breast_cancer, family = "binomial")
 
 # Results of logistic model
 summary(logistic_1)
 ```
 
-Now we will exclude the variables whose are not statistically significant at a 95% significance level. We will now remove the following: ID, size_uniformity, shape_uniformity, cell_size, normal_nucleoli, and mitoses.
+Now we will exclude the variables that are not statistically significant at a 95% significance level. We will now remove the following: ID, size_uniformity, shape_uniformity, cell_size, normal_nucleoli, and mitoses.
 ```{r}
 # Removing variables that are not statistically significant
 reduced_bc <- breast_cancer %>% 
@@ -140,11 +142,11 @@ All of our variables are now statistically significant at 0.05. We can move forw
 ## Interpretation
 Using the information above, we can infer which variables have an effect on whether breast cancer patients in Wisconsin are likely to have benign versus malignant growths.
 
-The values on the y-access of logistic regression are limited from 0 to 1 in order to calculate the probability. We can transform this to the log odds of cancerous growth to increase the domain of the y-axis from negative infinity to positive infinity. We will later visualize the logistic model using a domain of 0 to 1, but the coefficients are determined using logg odds.
+The values on the y-axis of logistic regression are limited from 0 to 1 in order to calculate the probability. We can transform this to the log odds of cancerous growth to increase the domain of the y-axis from negative infinity to positive infinity. We will later visualize the logistic model using a domain of 0 to 1, but the coefficients are determined using logg odds.
 
 Our model for the growth classification of breast cancer patients in Wisconsin from 1989-1991 is as follows:
 
-$ growthclassification = -10.1137 + 0.81166(clumpthickness) + 0.43412(marginaladhesion) + 0.48136(barenuclei) + 0.70154(blandcromatin) $
+growthclassification = -10.1137 + 0.81166(clumpthickness) + 0.43412(marginaladhesion) + 0.48136(barenuclei) + 0.70154(blandcromatin) 
 
 Based on our Wald test with 2 degrees of freedom, the p-values indicate that the associations are statistically significant at alpha less than 0.05 for clump thickness, magrinal adhesion, bare nuclei, and bland chromatin.
 
